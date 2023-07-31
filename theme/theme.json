@@ -1,0 +1,47 @@
+{
+  "button": 
+  {
+    "colours": 
+    {
+      "normal_bg": "white",
+      "hovered_bg": "#e5e5e5",
+      "active_bg": "#b4d2f0",
+      "normal_text": "black",
+      "hovered_text": "black",
+      "active_text": "black"
+    },
+    "misc": 
+    {
+      "shape": "rounded_rectangle",
+      "shape_corner_radius": 10,
+      "border_width": 1,
+      "shadow_width": 2,
+      "shadow_height": 2,
+      "shadow_offset": [0, 0],
+      "shadow_colour": [0, 0, 0, 100],
+      "shadow_shift_distance": 1
+    }
+  },
+  "label": 
+  {
+    "colours": 
+    {
+      "normal_text": "#000000"
+    }
+  },
+  "panel": 
+  {
+    "colours":
+    {
+      "dark_bg":"white",
+      "normal_border": "#ffffff"
+    },
+    "misc":
+    {
+      "shape": "rounded_rectangle",
+      "shape_corner_radius": "0",
+      "border_width": "0",
+      "shadow_width": "0"
+    }
+  }
+}

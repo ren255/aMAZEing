@@ -1,0 +1,25 @@
+{
+  "@info_panel": 
+  {
+    "colours": 
+    {
+      "dark_bg": "white",
+      "normal_border":"black"
+    },
+    "misc": 
+    {
+      "border_width": "1",
+      "shadow_width": "0"
+    }
+  },
+  "@score_board":
+  {
+  "font":
+    {
+      "name": "montserrat",
+      "size": "12",
+      "bold": "0",
+      "italic": "0"
+    }
+  }
+}
