@@ -12,10 +12,10 @@ class Scene2(BaseScene):
 
         self.window = screen.get_size()
 
+        #elements
         self.Header = UI_Store.Header
         self.Game_Screen = UI_Store.Game_Screen
         
-
         pad = 15
         map = 900-50-pad*2
         self.panel_map = pygame_gui.elements.UIPanel(
@@ -61,12 +61,12 @@ class Scene2(BaseScene):
             button_texts, 
             direction="vertical")
         
-    def handle_events(self,event):
-        if event.type == pygame.USEREVENT:
-            if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == self.buttons[0]:
-                    next = 1
+    def handle_events(self,event,call_back):
+        if event.type == pygame_gui.UI_BUTTON_PRESSED:
+            if event.ui_element == self.buttons[0]:
+                call_back.updateMap()
+                print("update_map")
+            print("Button",event.ui_element)
 
-    def each_second(self):
-        map = "a"
+
 

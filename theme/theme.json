@@ -18,7 +18,6 @@
       "shadow_width": 2,
       "shadow_height": 2,
       "shadow_offset": [0, 0],
-      "shadow_colour": [0, 0, 0, 100],
       "shadow_shift_distance": 1
     }
   },
