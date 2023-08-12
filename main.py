@@ -3,6 +3,7 @@ import pygame_gui
 # from dataclasses import dataclass
 
 from Scene.scene2 import Scene2
+from Scene.scene1 import Scene1
 from main_logic import MazeGen,Render,Timer
 
 
@@ -20,7 +21,7 @@ class Main:
         self.clock = pygame.time.Clock()
         pygame.display.set_caption("Maze Game")
 
-        self.scenes = [Scene2(self.screen)]
+        self.scenes = [Scene1(self.screen),Scene2(self.screen)]
         self.current_scene = self.scenes[0]
 
         self.call_back.updateMap()
@@ -45,10 +46,11 @@ class Main:
         self.current_scene.update(1 / fps)
         self.current_scene.draw(self.screen)
 
-        self.render.draw_map(
-            self.screen,
-            self.map,
-            self.scenes[0].panel_map)
+        if self.current_scene == self.scenes[1]:
+            self.render.draw_map(
+                self.screen,
+                self.map,
+                self.current_scene.panel_map)
 
         pygame.display.flip()
         self.clock.tick(60)
@@ -64,7 +66,7 @@ class Main:
                     pygame.quit()
                     return
                 
-                """ not working
+                #not working
                 self.current_scene.handle_events(event,self.call_back)
 
                 if event.type == pygame.USEREVENT:
@@ -73,8 +75,8 @@ class Main:
                             self.call_back.updateMap()
                             print("update_map")
                         print("Button", event.ui_element)
-                    print(event.type,pygame_gui.UI_BUTTON_PRESSED)32866 32867
-                """
+                    print(event.type,pygame_gui.UI_BUTTON_PRESSED) #32866 32867
+
             Timer1.check()
             self.update()
 

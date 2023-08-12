@@ -4,9 +4,13 @@ from pygame_gui.core import ObjectID
 
 class BaseScene:
 
-    def __init__(self,screen,theme = 'theme/theme.json'):
+    def __init__(self,screen,manager = None):
+        #manager is for UIStore
         self.screen = (screen.get_width(),screen.get_height())
-        self.manager = pygame_gui.UIManager(self.screen,theme)
+        if manager is not None:
+            self.manager = manager
+        else:       
+            self.manager = pygame_gui.UIManager(self.screen,'theme/theme.json')
 
     def process_events(self, event):
         self.manager.process_events(event)
@@ -48,16 +52,27 @@ class BaseScene:
 
         return elements
 
-class UIStore():
-    def __init__(self,manager):
-        self.Header = pygame_gui.elements.UIPanel(
+class UIStore(BaseScene):
+    def __init__(self,manager,screen):
+        #don't use function for scene
+        super().__init__(screen,manager)
+        self.manager.get_theme().load_theme('theme/custom.json')
+
+
+    def Header(self):
+        Header = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect((0,0), (1400,50)),
             starting_height=1,
-            manager=manager,
+            manager=self.manager,
             object_id=ObjectID("@info_panel"),
         )
-        self.Game_Screen = pygame_gui.elements.UIPanel(
+        return Header
+    
+    def Game_Screen(self):
+        Game_Screen = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect((0,50), (1400,850)),
             starting_height=0,
-            manager=manager,
+            manager=self.manager,
+            object_id=ObjectID("@game_screen"),
         )
+        return Game_Screen

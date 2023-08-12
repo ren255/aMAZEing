@@ -8,10 +8,15 @@ from Scene.BaceScene import BaseScene,UIStore
 
 class Scene1(BaseScene):
     def __init__(self,screen):
-        super().__init__(screen,'theme.json')
-        self.UIStore = UIStore(self.manager)
+        super().__init__(screen)
+        self.manager.get_theme().load_theme('theme/custom.json')
+        UI_Store = UIStore(self.manager,screen)
 
-        self.Baselabel1 = self.UIStore.Baselabel1
+        self.window = screen.get_size()
+
+        #elements
+        # self.Header = UI_Store.Header()
+        self.Game_Screen = UI_Store.Game_Screen()
 
         # GUI elements for scene 2
         self.button1 = pygame_gui.elements.UIButton(
@@ -25,3 +30,8 @@ class Scene1(BaseScene):
             text='this is scene2',
             manager=self.manager
         )
+
+
+    def handle_events(self,event,call_back):
+        if event.type == pygame_gui.UI_BUTTON_PRESSED:
+            print("Button",event.ui_element)

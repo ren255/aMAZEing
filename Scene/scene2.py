@@ -8,13 +8,13 @@ class Scene2(BaseScene):
     def __init__(self,screen):
         super().__init__(screen)
         self.manager.get_theme().load_theme('theme/custom.json')
-        UI_Store = UIStore(self.manager)
+        UI_Store = UIStore(self.manager,screen)
 
         self.window = screen.get_size()
 
         #elements
-        self.Header = UI_Store.Header
-        self.Game_Screen = UI_Store.Game_Screen
+        self.Header = UI_Store.Header()
+        self.Game_Screen = UI_Store.Game_Screen()
         
         pad = 15
         map = 900-50-pad*2
