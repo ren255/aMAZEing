@@ -1,2 +1,5 @@
-myenv/
 .DS_Store
+__pycache__/main_logic.cpython-310.pyc
+Scene/__pycache__/BaceScene.cpython-310.pyc
+Scene/__pycache__/scene2.cpython-310.pyc
+
