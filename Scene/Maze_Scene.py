@@ -63,14 +63,17 @@ class maze(BaseScene):
             direction="vertical")
         
     def handle_events(self,event,call_back):
+        call_back.updatePlayer()
+
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
-            print(self.HeaderElem)
 
             if event.ui_element == self.HeaderElem["logo"]:
                 call_back.change_scene("home")     
 
             if event.ui_element == self.buttons[0]:
-                call_back.updateMap()
+                call_back.reset_MapPlayer()
+                
+
 
 
 

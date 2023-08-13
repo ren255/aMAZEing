@@ -4,7 +4,7 @@ import pygame_gui
 
 from Scene.Home_Scene import home
 from Scene.Maze_Scene import maze
-from main_logic import MazeGen,Render,Timer
+from main_logic import MazeGen,Render,Timer,Player
 
 
 
@@ -12,8 +12,6 @@ class Main:
     def __init__(self):
         window = (1400,900)
         pygame.init()
-        #from main_logic.py
-        self.render = Render()
 
         self.call_back = call_back(self)
 
@@ -26,9 +24,6 @@ class Main:
             "maze" : maze(self.screen)
         }
         self.current_scene = self.scenes["home"]
-
-        self.call_back.updateMap()
-        self.map_index = 0
 
 
     def quit(self,event):
@@ -50,10 +45,15 @@ class Main:
         self.current_scene.draw(self.screen)
 
         if self.current_scene == self.scenes["maze"]:
-            self.render.draw_map(
-                self.screen,
+            self.call_back.draw_map(
                 self.map,
-                self.current_scene.panel_map)
+                self.current_scene.panel_map
+            )
+            
+            self.call_back.draw_player(
+                self.map,
+                self.current_scene.panel_map
+            )
 
         pygame.display.flip()
         self.clock.tick(60)
@@ -72,19 +72,51 @@ class Main:
 
             self.update()
 
+# for main and scene
 class call_back:
     def __init__(self,main):
         self.main = main
         self.MazeGen = MazeGen()
         self.render = Render()
+        self.timer1 = Timer(1)
+        self.reset_MapPlayer()
 
+
+    # ------Map : Gen Render
     def updateMap(self):
         self.MazeGen.GenMap(21)
         self.main.map = self.MazeGen.map_data
 
+    def draw_map(self,map_data, panel=None):
+        self.render.draw_map(
+            self.main.screen,
+            map_data,
+            panel
+        )  
+
+    # map--player
+    
+    def draw_player(self,map_data, panel=None):
+        self.render.draw_player(
+            self.player_pos,
+            self.main.screen,
+            map_data,
+            panel
+        )
+
+    def reset_MapPlayer(self):
+        self.updateMap()
+        self.player = Player(self.MazeGen.map_data)
+        self.player_pos = [1,1]
+
+    # ------Player
+    def updatePlayer(self):
+        keys = pygame.key.get_pressed()
+        self.player_pos = self.player.update(keys)
+
+    # ------Scene
     def change_scene(self,key):
         self.main.current_scene = self.main.scenes[key]
-    
     
     
 if __name__ == "__main__":
