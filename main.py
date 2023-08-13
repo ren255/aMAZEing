@@ -2,8 +2,8 @@ import pygame
 import pygame_gui
 # from dataclasses import dataclass
 
-from Scene.home import home
-from Scene.maze import maze
+from Scene.Home_Scene import home
+from Scene.Maze_Scene import maze
 from main_logic import MazeGen,Render,Timer
 
 
