@@ -2,8 +2,8 @@ import pygame
 import pygame_gui
 # from dataclasses import dataclass
 
-from Scene.scene2 import Scene2
-from Scene.scene1 import Scene1
+from Scene.home import home
+from Scene.maze import maze
 from main_logic import MazeGen,Render,Timer
 
 
@@ -21,8 +21,11 @@ class Main:
         self.clock = pygame.time.Clock()
         pygame.display.set_caption("Maze Game")
 
-        self.scenes = [Scene1(self.screen),Scene2(self.screen)]
-        self.current_scene = self.scenes[0]
+        self.scenes = {
+            "home" : home(self.screen),
+            "maze" : maze(self.screen)
+        }
+        self.current_scene = self.scenes["home"]
 
         self.call_back.updateMap()
         self.map_index = 0
@@ -46,7 +49,7 @@ class Main:
         self.current_scene.update(1 / fps)
         self.current_scene.draw(self.screen)
 
-        if self.current_scene == self.scenes[1]:
+        if self.current_scene == self.scenes["maze"]:
             self.render.draw_map(
                 self.screen,
                 self.map,
@@ -56,40 +59,34 @@ class Main:
         self.clock.tick(60)
 
     def main_loop(self):
-        Timer1 = Timer(1)
-        Timer1.add(self.call_back.updateMap)
-
         while True:
 
             for event in pygame.event.get():
+                self.current_scene.process_events(event)
                 if self.quit(event):
                     pygame.quit()
                     return
-                
-                #not working
+
                 self.current_scene.handle_events(event,self.call_back)
 
-                if event.type == pygame.USEREVENT:
-                    if event.type == pygame_gui.UI_BUTTON_PRESSED:
-                        if event.ui_element == Scene2.buttons[0]:
-                            self.call_back.updateMap()
-                            print("update_map")
-                        print("Button", event.ui_element)
-                    print(event.type,pygame_gui.UI_BUTTON_PRESSED) #32866 32867
 
-            Timer1.check()
             self.update()
 
 class call_back:
     def __init__(self,main):
         self.main = main
         self.MazeGen = MazeGen()
+        self.render = Render()
 
     def updateMap(self):
         self.MazeGen.GenMap(21)
         self.main.map = self.MazeGen.map_data
-        
 
+    def change_scene(self,key):
+        self.main.current_scene = self.main.scenes[key]
+    
+    
+    
 if __name__ == "__main__":
     print("start")
     maze = Main()

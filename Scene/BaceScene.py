@@ -66,7 +66,20 @@ class UIStore(BaseScene):
             manager=self.manager,
             object_id=ObjectID("@info_panel"),
         )
-        return Header
+        Logo = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(0,0,150,50),
+            manager=self.manager,
+            object_id=ObjectID("@logo"),
+            text="MazeMage",
+            container=Header,
+        )
+
+        Header_elements = {
+            "header": Header,
+            "logo": Logo
+        }
+        
+        return Header_elements
     
     def Game_Screen(self):
         Game_Screen = pygame_gui.elements.UIPanel(

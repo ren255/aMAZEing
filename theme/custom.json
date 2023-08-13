@@ -21,5 +21,32 @@
       "bold": "0",
       "italic": "0"
     }
+  },
+  "@logo":
+  {
+    "colours": 
+    {
+      "normal_bg": "white",
+      "hovered_bg": "white",
+      "active_bg": "white",
+      "normal_text": "black",
+      "hovered_text": "black",
+      "active_text": "black",
+      "normal_border":"white",
+      "hovered_border":"white",
+      "active_border":"white"
+    },
+    "Font":
+    {
+      "name":"montserrat",
+      "size": "30",
+      "bold":1
+    },
+    "misc": 
+    {
+      "shape": "rectangle",
+      "border_width": "0",
+      "shadow_width": "0"
+    }
   }
 }

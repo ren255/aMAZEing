@@ -4,7 +4,7 @@ from pygame_gui.core import ObjectID
 from Scene.BaceScene import BaseScene,UIStore
 
 
-class Scene2(BaseScene):
+class maze(BaseScene):
     def __init__(self,screen):
         super().__init__(screen)
         self.manager.get_theme().load_theme('theme/custom.json')
@@ -13,7 +13,8 @@ class Scene2(BaseScene):
         self.window = screen.get_size()
 
         #elements
-        self.Header = UI_Store.Header()
+        # HeaderElem is dictionary
+        self.HeaderElem = UI_Store.Header()
         self.Game_Screen = UI_Store.Game_Screen()
         
         pad = 15
@@ -63,10 +64,14 @@ class Scene2(BaseScene):
         
     def handle_events(self,event,call_back):
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
+            print(self.HeaderElem)
+
+            if event.ui_element == self.HeaderElem["logo"]:
+                call_back.change_scene("home")     
+
             if event.ui_element == self.buttons[0]:
                 call_back.updateMap()
-                print("update_map")
-            print("Button",event.ui_element)
+
 
 
 

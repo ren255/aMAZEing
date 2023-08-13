@@ -33,12 +33,11 @@
     "colours":
     {
       "dark_bg":"white",
-      "normal_border": "#ffffff"
+      "normal_border": "white"
     },
     "misc":
     {
-      "shape": "rounded_rectangle",
-      "shape_corner_radius": "0",
+      "shape": "rectangle",
       "border_width": "0",
       "shadow_width": "0"
     }
