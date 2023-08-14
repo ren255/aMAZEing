@@ -4,8 +4,10 @@ import pygame_gui
 
 from Scene.Home_Scene import home
 from Scene.Maze_Scene import maze
-from main_logic import MazeGen,Render,Timer,Player
-
+from main_logic import (
+    loopTimer,Timer,eachFrame,YieldListloop, # loop timer
+    MazeGen,Render,                          # render,map
+    DynaPlayerMaster)                        # player master
 
 
 class Main:
@@ -23,8 +25,7 @@ class Main:
             "home" : home(self.screen),
             "maze" : maze(self.screen)
         }
-        self.current_scene = self.scenes["home"]
-
+        self.call_back.change_scene("home")
 
     def quit(self,event):
         if event.type == pygame.QUIT:
@@ -44,16 +45,7 @@ class Main:
         self.current_scene.update(1 / fps)
         self.current_scene.draw(self.screen)
 
-        if self.current_scene == self.scenes["maze"]:
-            self.call_back.draw_map(
-                self.map,
-                self.current_scene.panel_map
-            )
-            
-            self.call_back.draw_player(
-                self.map,
-                self.current_scene.panel_map
-            )
+        self.call_back.eachFrame_render.process()            
 
         pygame.display.flip()
         self.clock.tick(60)
@@ -76,16 +68,28 @@ class Main:
 class call_back:
     def __init__(self,main):
         self.main = main
+
+        self.loopTimer1 = loopTimer(1)
+        self.timer1 = Timer()
+        self.eachFrame_render = eachFrame()
+        self.SmoothPos = YieldListloop()
         self.MazeGen = MazeGen()
         self.render = Render()
-        self.timer1 = Timer(1)
-        self.reset_MapPlayer()
+        # DynaPlayerMaster'instance is self.player   
+        self.reset_MapPlayer() 
 
+        def print_message():
+            print("This is cooldown_Ppos's")      
+
+        self.Timer02 = loopTimer(1,[print_message])            
+
+    # ------loop timer yield
+    # acsess directory
 
     # ------Map : Gen Render
     def updateMap(self):
         self.MazeGen.GenMap(21)
-        self.main.map = self.MazeGen.map_data
+        self.map = self.MazeGen.map_data
 
     def draw_map(self,map_data, panel=None):
         self.render.draw_map(
@@ -94,29 +98,63 @@ class call_back:
             panel
         )  
 
-    # map--player
-    
     def draw_player(self,map_data, panel=None):
+        draw_player_pos = self.get_drawPpos()
         self.render.draw_player(
-            self.player_pos,
+            draw_player_pos,
             self.main.screen,
             map_data,
             panel
         )
 
+    def renderAll(self):
+        self.Timer02.check()
+
+        self.draw_map(
+            self.map,
+            self.main.current_scene.panel_map
+        )
+        
+        self.draw_player(
+            self.map,
+            self.main.current_scene.panel_map
+        )
+
+
     def reset_MapPlayer(self):
         self.updateMap()
-        self.player = Player(self.MazeGen.map_data)
-        self.player_pos = [1,1]
+        self.player = DynaPlayerMaster(self.MazeGen.map_data)
+        self.cooldown_Ppos = False
+        self.SmoothPos.setlist([])
 
     # ------Player
-    def updatePlayer(self):
+    def playerMotionManager(self):
         keys = pygame.key.get_pressed()
-        self.player_pos = self.player.update(keys)
+        player2pos = self.player.update(keys)
+        # (monve) and (not in cooldown_Ppos)
+        if (player2pos[0] != False) and (self.cooldown_Ppos == False):
+            result = self.player.SmoothFPSmove(player2pos[0],player2pos[1])
+            self.SmoothPos.setlist(result)
+            # print(len(result))
+            
+
+    def get_drawPpos(self):
+        result = self.SmoothPos.next()
+        Pcooldown = self.cooldown_Ppos
+        if result is not False:
+            self.cooldown_Ppos = True
+            if Pcooldown != self.cooldown_Ppos:
+                print("cooldown_Ppos is ",Pcooldown, self.cooldown_Ppos)
+            return result
+        else:
+            self.cooldown_Ppos = False
+            return self.player.playerPos
 
     # ------Scene
     def change_scene(self,key):
         self.main.current_scene = self.main.scenes[key]
+        self.eachFrame_render.remove()
+        self.main.current_scene.setUP(self)
     
     
 if __name__ == "__main__":
