@@ -32,6 +32,9 @@ class home(BaseScene):
             container=self.Game_Screen
         )
 
+    def setUP(self,call_back):
+        pass
+
 
     def handle_events(self,event,call_back):
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
