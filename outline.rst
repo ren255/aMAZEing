@@ -13,28 +13,27 @@ MAZE/
 
 MAZE/
 ├── main.py
-│   ├── Main                    # メインループ
-│   └── call_back               # シーンとのインタラクション用、Mainのインスタンスを使用
+│   ├── Main()                  # メインループの管理クラス
+│   └── call_back()             # シーンとのインタラクション用、Mainのインスタンスを使用
 │
 ├── main_logic.py
-│   ├── Timer                   # 定期的な動作管理
-│   ├── Render                  # 描画クラス
-│   └── MazeGen                 # 迷路ジェネレータクラス
+│   ├── Timer()                 # ゲーム内のタイミング管理クラス
+│   ├── Render()                # 描画関連のクラス
+│   └── MazeGen()               # 迷路生成のクラス
 │
 ├── Scenes/
-│   ├── Base_Scene.py           # シーンの共通基本機能
-│   │   ├── BaseScene           # 基本のシーン関数、auto_layout
-│   │   └── UIStore(BaseScene)  # UIelementを保存
-│   ├── home.py                 # ホームシーン
-│   │   └── home(BaseScene)     # Elementとevent処理 Mainのインスタンスを使用
-│   └── maze.py                 # 迷路シーン
-│       └── maze(BaseScene)     # Elementとevent処理 Mainのインスタンスを使用
+│   ├── Base_Scene.py
+│   │   ├── BaseScene()         # シーンの共通基本機能を提供する基本クラス
+│   │   └── UIStore(BaseScene)  # UI要素を保存し管理するクラス
+│   ├── Home_Scene.py
+│   │   └── home(BaseScene)     # 要素とイベント処理を含む、Mainのインスタンスを使用
+│   └── Maze_Scene.py
+│       ├── maze(BaseScene)     # 要素とイベント処理を含む、Mainのインスタンスを使用
+│       └── Player()            # プレイヤークラス
 │
 └── themes/
     ├ theme.json               # デフォルトのテーマ設定ファイル
     └ custom.json              # カスタムテーマ設定ファイル
-
-
 
 
 

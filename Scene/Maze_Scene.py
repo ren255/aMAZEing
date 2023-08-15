@@ -62,15 +62,24 @@ class maze(BaseScene):
             button_texts, 
             direction="vertical")
         
+    def setUP(self,call_back):
+        call_back.eachFrame_render.add([
+            call_back.playerMotionManager,
+            call_back.renderAll,
+            call_back.mapReset_goal
+        ])
+
     def handle_events(self,event,call_back):
+        
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
-            print(self.HeaderElem)
 
             if event.ui_element == self.HeaderElem["logo"]:
                 call_back.change_scene("home")     
 
             if event.ui_element == self.buttons[0]:
-                call_back.updateMap()
+                call_back.reset_MapPlayer()
+                
+
 
 
 
