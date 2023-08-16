@@ -11,7 +11,7 @@ MAZE/
 
 
 
-MAZE/
+aMAZEing/
 ├── main.py
 │   ├── Main()                  # メインループの管理クラス
 │   └── call_back()             # シーンとのインタラクション用、Mainのインスタンスを使用
