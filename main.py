@@ -6,7 +6,7 @@ from Scene.Home_Scene import home
 from Scene.Maze_Scene import maze
 from main_logic import (
     loopTimer,Timer,eachFrame,YieldListloop, # loop timer
-    MazeGen,Render,                          # render,map
+    Maze,Render,                          # render,map
     DynaPlayerMaster)                        # player master
 
 
@@ -68,56 +68,55 @@ class Main:
 class call_back:
     def __init__(self,main):
         self.main = main
+        self.map_size = 21
 
         self.loopTimer1 = loopTimer(1)
         self.timer1 = Timer()
         self.eachFrame_render = eachFrame()
         self.SmoothPos = YieldListloop()
-        self.MazeGen = MazeGen()
+        self.MazeGen = Maze(self.map_size)
         self.render = Render()
         # DynaPlayerMaster'instance is self.player   
-        self.reset_MapPlayer()  
+        self.reset_MapPlayer()
+        self.setMapPanel(None)
 
     # ------loop timer yield
     # acsess directory
 
     # ------Map : Gen Render
     def updateMap(self):
-        self.map_size = 21
-        self.map = self.MazeGen.GenMap(self.map_size)
+        self.map,self.solvedMap,self.solution = self.MazeGen.genMapAsolve()
+        self.map2Nomal()
 
-    def draw_map(self,map_data, panel=None):
+    def draw_map(self):
         self.render.draw_map(
             self.main.screen,
-            map_data,
-            panel,
+            self.mapdata,
+            self.mapPanel,
             True
         )  
 
-    def draw_player(self,map_data, panel=None):
+    def draw_player(self):
         draw_player_pos = self.get_drawPpos()
         self.render.draw_player(
             draw_player_pos,
             self.main.screen,
-            map_data,
-            panel
+            self.mapdata,
+            self.mapPanel
         )
+    
+    def setMapPanel(self,palele):
+        self.mapPanel = palele
+    
+    def map2Nomal(self):
+        self.mapdata = self.map
 
-    def renderAll(self):
-        self.draw_map(
-            self.map,
-            self.main.current_scene.panel_map
-        )
-        
-        self.draw_player(
-            self.map,
-            self.main.current_scene.panel_map
-        )
-
+    def map2Solution(self):
+        self.mapdata = self.solvedMap
 
     def reset_MapPlayer(self):
         self.updateMap()
-        self.player = DynaPlayerMaster(self.MazeGen.map_data)
+        self.player = DynaPlayerMaster(self.map)
         self.cooldown_Ppos = False
         self.SmoothPos.setlist([])
 
@@ -146,7 +145,6 @@ class call_back:
         
     def is_goal(self):
         index = self.map_size -2
-        print(self.player.playerPos)
         if self.player.playerPos == [index,index]:
             return True
         

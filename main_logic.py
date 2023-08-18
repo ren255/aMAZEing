@@ -49,13 +49,14 @@ class eachFrame:
     def __init__(self,processes = None):
         self.processFuncs = processes if processes is not None else []
 
-    def add(self,process):
-        if type(process) is list:
+    def add(self, process):
+        if isinstance(process, list):
             for i in process:
-                self.processFuncs.append(i)
+                if i not in self.processFuncs:
+                    self.processFuncs.append(i)
         else:
-            self.processFuncs.append(process)
-        self.processFuncs = list(set(self.processFuncs))
+            if process not in self.processFuncs:
+                self.processFuncs.append(process)
 
     def remove(self,process = None):
         if process in self.processFuncs:
@@ -182,76 +183,194 @@ class Render:
 
         
 # access by call_back
-class MazeGen:
-    def __init__(self):
-        pass
-        
-    def map_setup(self, sideL):
-        # Create the initial map with outer walls and inner passages
-        self.map_data = np.full((sideL, sideL), False, dtype=bool)
-        self.map_data[0, :] = True         # Top row
-        self.map_data[-1, :] = True        # Bottom row
-        self.map_data[:, 0] = True         # Leftmost column
-        self.map_data[:, -1] = True        # Rightmost 
 
-        self.map_datas = []
-
-        rang = range(2, sideL - 2, 2)
-        self.candidates = [(x, y) for y in rang for x in rang]
-        random.shuffle(self.candidates)
-
-    def GenMap(self, sideL):
-        self.map_setup(sideL)
-        while self.candidates:
-            self.MeWall = []
-            startP = self.candidates.pop(0)
-            self.map_data[startP] = True
+class Maze:
+    def __init__(self,sideL):
+            self.Iwall = []
             
-            running = True
-            while running:
-                startP = self.wall_extend(startP) 
-                if startP is False:
-                    running = False
-        return self.map_data
+            self.MazeGen = self.MazeGenerator(sideL)
+            self.solveMaze = self.SolveMaze(sideL)
+            
+    def genMapAsolve(self):
+        map = self.GenerateMaze()
+        solution,solvedMap = self.solveM(map)
+        return map,solvedMap,solution
     
-    def wall_extend(self, startP):
-        directions = np.array([(0, 2), (2, 0), (0, -2), (-2, 0)])
-        araund = np.array([(0, 1), (1, 0), (0, -1), (-1, 0)])
-        np.random.shuffle(directions)
-        re = False
-        conect = False
-
-        for direc in directions:          
-            pos = (startP + direc)
-            pos2 = (startP + direc // 2)
-
-            if not self.is_inside_map(pos):
-                continue
+    def GenerateMaze(self):
+        map = self.MazeGen.GenMap()
+        return map
+    
+    def solveM(self,map):
+        solution = self.solveMaze.solve(map)
+        solvedMap = self.wall2map(map,solution)
+        return solution,solvedMap
+    
+    def wall2map(self,map,wall):
+        map = map.astype(int)
+        for pos in wall:
+            map[pos[1],pos[0]] = 2
+        return map
+    
+    # maze generator
+    class MazeGenerator:
+        def __init__(self,sideL):
+            self.sideL = sideL
+            self.Iwall = []
+        
+        def GenMap(self):
+            map,maps,candidates = self.SetupMap(self.sideL)
             
-            if not self.MeWall or tuple(pos) not in self.MeWall:
-                if self.map_data[tuple(pos)]:  # Extend to a wall 
-                    conect = True
-                elif np.any([self.map_data[index] for index in (araund + pos)]):
-                    re = True
+            # loop through the candidate
+            while len(candidates):
+                # store wall pos
+                self.Iwall = []
+                startPos = candidates.pop(0)
+                self.Iwall.append(startPos)
+                
+                available_wall = True
+                while available_wall:
+                    available_wall = False
+                    running = True
+                    NextPos = startPos
+                    while running:
+                        NextPos = self.wall_extend(map,NextPos)
+                        
+                        if NextPos is None:
+                            # stack wall reset
+                            running = False
+                            available_wall = True
+                            self.Iwall = []
+                            
+                        elif NextPos is False:
+                            running = False
+                            
+                map,candidates = self.Iwall2map(map,candidates)
+                
+            return map
+        
+        # extend the wall for two blocks
+        def wall_extend(self,map,startPos):
+            directions = np.array([(0,2),(2,0),(0,-2),(-2,0)])
+            np.random.shuffle(directions)
+            connect = False
+            
+            for direc in directions:
+                
+                pos = (startPos + direc)
+                pos2 = (startPos + direc // 2)
+                
+                if self.outOFbounds(pos):
+                    continue
+                
+                if not any(np.all(pos == index) for index in self.Iwall):
+                    
+                    self.Iwall.append(tuple(pos))
+                    self.Iwall.append(tuple(pos2))
+                    
+                    # check pos is connect to wall
+                    try:
+                        if np.any([map[index[0],index[1]] for index in self.Iwall]):
+                            connect = True
+                    except IndexError:
+                        print("map size mast be odd number")
+                        
+                    if connect:
+                        return False
+                    else:
+                        return tuple(pos)
+                    
+                    
+                    
+        # convert Iwall to map
+        def Iwall2map(self,map,candidates):
+            for pos in self.Iwall:
+                if pos in candidates:
+                    candidates.remove(pos)
+                    pass
+                map[pos[0],pos[1]] = True
+                
+            self.Iwall = []
+            return map,candidates
+            
+        def outOFbounds(self,pos):
+            isINx = 0 <= pos[0] < self.sideL
+            isINy = 0 <= pos[1] < self.sideL
+            return not (isINx or isINy)
+            
+        @staticmethod
+        def SetupMap(Sidelength):
+            # Create an initial map with walls
+            map = np.full((Sidelength,Sidelength),False,dtype=bool)
+            map[0,:] = True    #Top row
+            map[:,0] = True    #Left column
+            map[-1,:] = True   #Bottom row
+            map[:,-1] = True   #Right column
+            
+            maps = []
+            
+            Range = range(2,Sidelength -2 ,2)
+            candidates = [(x,y) for x in Range for y in Range]
+            random.shuffle(candidates)
+            
+            return map,maps,candidates
+        
+    class SolveMaze:
+        def __init__(self,Sidelength):
+            self.sideL = Sidelength
+            
+        def solve(self,map):
+            self.map = map
+            self.start = np.array([1, 1])
+            self.goal = np.array([self.sideL - 2, self.sideL - 2])
+        
+            path = []
+            self.dfs(self.start, path)
+            return self.solution
+        
+        def dfs(self, pos, path):
+            if np.array_equal(pos, self.goal):
+                path.append(pos)
+                self.update_solution(path)
+                return True
+            
+            path.append(pos)
 
-                self.map_data[pos[0], pos[1]] = True
-                self.map_data[pos2[0], pos2[1]] = True
-                self.map_datas.append(self.map_data.copy())
-                self.MeWall.append(tuple(pos))
-
-                if tuple(pos) in self.candidates:
-                    self.candidates.remove(tuple(pos))
-
-                if re or conect:
-                    re = False
-                else:
-                    re = tuple(pos)
-                break
-        return re
-
-    def is_inside_map(self, pos):
-        return 0 <= pos[0] < self.map_data.shape[0] and 0 <= pos[1] < self.map_data.shape[1]
-
+            directions = self.get_destination(pos)
+            
+            for new_pos in directions:
+                if any(np.array_equal(new_pos, pos) for pos in path):
+                    continue
+                if self.dfs(new_pos, path):
+                    return True
+            
+            path.pop()
+            return False
+        
+        def update_solution(self,path):
+            self.solution = []
+            Ppos = self.start
+            for pos in path:
+                x1, y1 = Ppos
+                x2, y2 = pos
+                if abs(x1 - x2) == 2 and y1 == y2:
+                    self.solution.append(((x1 + x2) // 2, y1))
+                elif x1 == x2 and abs(y1 - y2) == 2:
+                    self.solution.append((x1, (y1 + y2) // 2))
+                self.solution.append(pos)
+                Ppos = pos
+        
+        def get_destination(self,pos):
+            directions = np.array([(0,1),(1,0),(0,-1),(-1,0)])
+            np.random.shuffle(directions)
+            destinations = []
+            for direc in directions:
+                goPos = pos + direc
+                goto = self.map[goPos[1],goPos[0]]
+                if  goto == False:
+                    destinations.append(goPos + direc)
+            return destinations
+        
+        
 #------------------------------------------------------------player
 class DynaPlayerMaster:
     def __init__(self, map_data):

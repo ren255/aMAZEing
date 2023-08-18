@@ -52,7 +52,7 @@ class maze(BaseScene):
         #info_Panels end
 
         # ボタンを自動配置する例
-        button_texts = ["Next", "Auto1", "Auto5","stop","Button","Button","Button",]
+        button_texts = ["Next", "Solution", "Nomal","Button","Button","Button","Button",]
         self.buttons = self.auto_layout(
             self.map_buttons, 
             pygame_gui.elements.UIButton, 
@@ -63,9 +63,11 @@ class maze(BaseScene):
             direction="vertical")
         
     def setUP(self,call_back):
+        call_back.setMapPanel(self.panel_map)
         call_back.eachFrame_render.add([
             call_back.playerMotionManager,
-            call_back.renderAll,
+            call_back.draw_map,
+            call_back.draw_player,
             call_back.mapReset_goal
         ])
 
@@ -78,7 +80,12 @@ class maze(BaseScene):
 
             if event.ui_element == self.buttons[0]:
                 call_back.reset_MapPlayer()
-                
+            
+            if event.ui_element == self.buttons[1]:
+                call_back.map2Solution()
+            
+            if event.ui_element == self.buttons[2]:
+                call_back.map2Nomal()
 
 
 
