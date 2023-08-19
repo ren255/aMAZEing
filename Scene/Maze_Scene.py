@@ -5,7 +5,8 @@ from Scene.BaceScene import BaseScene,UIStore
 
 
 class maze(BaseScene):
-    def __init__(self,screen):
+    def __init__(self,screen,call_back):
+        self.call_back = call_back
         super().__init__(screen)
         self.manager.get_theme().load_theme('theme/custom.json')
         UI_Store = UIStore(self.manager,screen)
@@ -52,7 +53,7 @@ class maze(BaseScene):
         #info_Panels end
 
         # ボタンを自動配置する例
-        button_texts = ["Next", "Auto1", "Auto5","stop","Button","Button","Button",]
+        button_texts = ["Next", "Solution", "Nomal","Button","Button","Button","Button",]
         self.buttons = self.auto_layout(
             self.map_buttons, 
             pygame_gui.elements.UIButton, 
@@ -62,15 +63,31 @@ class maze(BaseScene):
             button_texts, 
             direction="vertical")
         
-    def handle_events(self,event,call_back):
+    def setUP(self):
+        self.call_back.setMapPanel(self.panel_map)
+        self.call_back.eachFrame_render.add([
+            self.call_back.playerMotionManager,
+            self.call_back.draw_map,
+            self.call_back.draw_player,
+            self.call_back.mapReset_goal
+        ])
+
+    def handle_events(self,event):
+        
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
-            print(self.HeaderElem)
 
             if event.ui_element == self.HeaderElem["logo"]:
-                call_back.change_scene("home")     
+                self.call_back.change_scene("home")     
 
             if event.ui_element == self.buttons[0]:
-                call_back.updateMap()
+                self.call_back.reset_MapPlayer()
+            
+            if event.ui_element == self.buttons[1]:
+                self.call_back.map2Solution()
+            
+            if event.ui_element == self.buttons[2]:
+                self.call_back.map2Nomal()
+
 
 
 

@@ -1,0 +1,32 @@
+@startuml name
+
+class MazeGen {
+    +__init__()
+    +map_setup(sideL: int)
+    +GenMap(sideL: int)
+    +wall_extend(startP: Tuple[int, int])
+    +is_inside_map(pos: Tuple[int, int]): bool
+    -map_data: np.ndarray[bool]
+    -map_datas: List[np.ndarray[bool]]
+    -candidates: List[Tuple[int, int]]
+    -MeWall: List[Tuple[int, int]]
+}
+
+
+start
+:MazeGen();
+if (candidates is not empty) then (yes)
+  :map_setup(sideL);
+  while (candidates is not empty)
+    :GenMap(sideL);
+    :wall_extend(startP);
+  endwhile
+else (no)
+  :return map_data;
+endif
+stop
+
+
+
+@enduml
+
