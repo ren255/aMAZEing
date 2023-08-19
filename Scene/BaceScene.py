@@ -20,6 +20,10 @@ class BaseScene:
 
     def draw(self, surface):
         self.manager.draw_ui(surface)
+    
+    # for fanction call protection
+    def setUP():
+        pass
 
     @staticmethod
     def auto_layout(panel, element, start_point, size, spacing, text_list, direction="vertical"):
@@ -70,7 +74,7 @@ class UIStore(BaseScene):
             relative_rect=pygame.Rect(0,0,150,50),
             manager=self.manager,
             object_id=ObjectID("@logo"),
-            text="MazeMage",
+            text="aMAZEing",
             container=Header,
         )
 

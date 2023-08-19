@@ -1,12 +1,11 @@
 import pygame
-import pygame_gui
 # from dataclasses import dataclass
 
 from Scene.Home_Scene import home
 from Scene.Maze_Scene import maze
 from main_logic import (
     loopTimer,Timer,eachFrame,YieldListloop, # loop timer
-    Maze,Render,                          # render,map
+    Maze,Render,                             # render,map
     DynaPlayerMaster)                        # player master
 
 
@@ -20,10 +19,10 @@ class Main:
         self.screen = pygame.display.set_mode(window)
         self.clock = pygame.time.Clock()
         pygame.display.set_caption("Maze Game")
-
+        
         self.scenes = {
-            "home" : home(self.screen),
-            "maze" : maze(self.screen)
+            "home" : home(self.screen,self.call_back),
+            "maze" : maze(self.screen,self.call_back)
         }
         self.call_back.change_scene("home")
 
@@ -59,7 +58,7 @@ class Main:
                     pygame.quit()
                     return
 
-                self.current_scene.handle_events(event,self.call_back)
+                self.current_scene.handle_events(event)
 
 
             self.update()
@@ -68,15 +67,15 @@ class Main:
 class call_back:
     def __init__(self,main):
         self.main = main
-        self.map_size = 21
-
+        
         self.loopTimer1 = loopTimer(1)
         self.timer1 = Timer()
         self.eachFrame_render = eachFrame()
         self.SmoothPos = YieldListloop()
-        self.MazeGen = Maze(self.map_size)
+        self.maze = Maze()
         self.render = Render()
-        # DynaPlayerMaster'instance is self.player   
+        # DynaPlayerMaster'instance is self.player
+        self.set_MapSize(21)
         self.reset_MapPlayer()
         self.setMapPanel(None)
 
@@ -84,8 +83,9 @@ class call_back:
     # acsess directory
 
     # ------Map : Gen Render
+    
     def updateMap(self):
-        self.map,self.solvedMap,self.solution = self.MazeGen.genMapAsolve()
+        self.map,self.solvedMap,self.solution = self.maze.genMapAsolve()
         self.map2Nomal()
 
     def draw_map(self):
@@ -119,11 +119,21 @@ class call_back:
         self.player = DynaPlayerMaster(self.map)
         self.cooldown_Ppos = False
         self.SmoothPos.setlist([])
+        
+    # maze parameter
+    def set_MapSize(self,size):
+        self.map_size = size
+        self.maze.set_MazeSize(size)
+        
+    def get_MapSize(self):
+        return self.map_size
 
     # ------Player
     def playerMotionManager(self):
-        speed = 20
+        speed = 15
         fps = 60
+        
+        speed = speed //2
 
         keys = pygame.key.get_pressed()
         player2pos = self.player.update(keys)
@@ -156,7 +166,7 @@ class call_back:
     def change_scene(self,key):
         self.main.current_scene = self.main.scenes[key]
         self.eachFrame_render.remove()
-        self.main.current_scene.setUP(self)
+        self.main.current_scene.setUP()
     
     
 if __name__ == "__main__":

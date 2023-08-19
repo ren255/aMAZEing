@@ -185,12 +185,17 @@ class Render:
 # access by call_back
 
 class Maze:
-    def __init__(self,sideL):
+    def __init__(self):
             self.Iwall = []
             
-            self.MazeGen = self.MazeGenerator(sideL)
-            self.solveMaze = self.SolveMaze(sideL)
-            
+            self.MazeGen = self.MazeGenerator()
+            self.solveMaze = self.SolveMaze()
+    
+    def set_MazeSize(self,sideL):
+        self.sideL = sideL
+        self.MazeGen.update_sideL(self.sideL)
+        self.solveMaze.update_sideL(self.sideL)
+    
     def genMapAsolve(self):
         map = self.GenerateMaze()
         solution,solvedMap = self.solveM(map)
@@ -213,9 +218,11 @@ class Maze:
     
     # maze generator
     class MazeGenerator:
-        def __init__(self,sideL):
-            self.sideL = sideL
+        def __init__(self):
             self.Iwall = []
+            
+        def update_sideL(self, new_sideL):
+            self.sideL = new_sideL
         
         def GenMap(self):
             map,maps,candidates = self.SetupMap(self.sideL)
@@ -315,8 +322,8 @@ class Maze:
             return map,maps,candidates
         
     class SolveMaze:
-        def __init__(self,Sidelength):
-            self.sideL = Sidelength
+        def update_sideL(self, new_sideL):
+            self.sideL = new_sideL
             
         def solve(self,map):
             self.map = map
@@ -394,23 +401,26 @@ class DynaPlayerMaster:
                 return False
             
         self.pass_playerPos = self.playerPos.copy()
+        check_pos = self.playerPos.copy()
         new_pos = self.playerPos.copy()
 
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            new_pos[0] += 1
-
+            check_pos[0] += 1
+            new_pos[0] += 2
+            
         elif keys[pygame.K_LEFT]  or keys[pygame.K_a]:
-            new_pos[0] -= 1
-
+            check_pos[0] -= 1
+            new_pos[0] -= 2
+            
         elif keys[pygame.K_DOWN]  or keys[pygame.K_s]:
-            new_pos[1] += 1
-
+            check_pos[1] += 1
+            new_pos[1] += 2
+            
         elif keys[pygame.K_UP]    or keys[pygame.K_w]:
-            new_pos[1] -= 1
-   
-        
+            check_pos[1] -= 1
+            new_pos[1] -= 2
 
-        if (is_in_map(new_pos)) and (not is_wall(new_pos)) and (new_pos != self.pass_playerPos):
+        if (is_in_map(check_pos)) and (not is_wall(check_pos)) and (check_pos != self.pass_playerPos):
             self.playerPos = new_pos
             return self.pass_playerPos,self.playerPos
         else:
