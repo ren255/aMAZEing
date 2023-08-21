@@ -11,7 +11,7 @@ class home(BaseScene):
         self.call_back = call_back
         super().__init__(screen)
         self.manager.get_theme().load_theme('theme/custom.json')
-        UI_Store = UIStore(self.manager,screen)
+        UI_Store = UIStore(self.manager)
 
         self.window = screen.get_size()
 
@@ -66,4 +66,6 @@ class home(BaseScene):
             if event.ui_element == self.Button_start:
                 self.call_back.change_scene("maze")
                 self.call_back.reset_MapPlayer()
+                self.call_back.reset_mapStage()
+                self.call_back.start_stopwatch()
 

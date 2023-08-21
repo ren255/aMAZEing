@@ -84,7 +84,20 @@ class Timer:
             return True
         else:
             return False
+        
+class stopwatch:
+    def start(self):
+        self.start_time = time.time()
+        
+    def get_time(self):
+        if self.start_time is None:
+            return None
+        else:
+            return time.time() - self.start_time
 
+    def reset(self):
+        self.start_time = None
+        
 class YieldListloop:
     def setlist(self, input_list):
         self.input_list = input_list

@@ -4,7 +4,7 @@ import pygame
 from Scene.Home_Scene import home
 from Scene.Maze_Scene import maze
 from main_logic import (
-    loopTimer,Timer,eachFrame,YieldListloop, # loop timer
+    loopTimer,stopwatch,Timer,eachFrame,YieldListloop, # loop timer
     Maze,Render,                             # render,map
     DynaPlayerMaster)                        # player master
 
@@ -68,26 +68,36 @@ class call_back:
     def __init__(self,main):
         self.main = main
         
-        self.loopTimer1 = loopTimer(1)
+        #self.loopTimer1 = loopTimer(1)
         self.timer1 = Timer()
+        self.stopwatch = stopwatch()
         self.eachFrame_render = eachFrame()
         self.SmoothPos = YieldListloop()
+        
         self.maze = Maze()
         self.render = Render()
         # DynaPlayerMaster'instance is self.player
         self.set_MapSize(21)
+        self.reset_mapStage()
         self.reset_MapPlayer()
         self.setMapPanel(None)
+        
 
     # ------loop timer yield
-    # acsess directory
+    def start_stopwatch(self):
+        self.stopwatch.start()
+    
+    def get_time(self):
+        self.stopwatch.get_time()
+        return self.stopwatch.get_time()
 
     # ------Map : Gen Render
     
     def updateMap(self):
         self.map,self.solvedMap,self.solution = self.maze.genMapAsolve()
         self.map2Nomal()
-
+    
+    
     def draw_map(self):
         self.render.draw_map(
             self.main.screen,
@@ -119,6 +129,13 @@ class call_back:
         self.player = DynaPlayerMaster(self.map)
         self.cooldown_Ppos = False
         self.SmoothPos.setlist([])
+        self.mapStage += 1
+        
+    def get_mapStage(self):
+        return self.mapStage
+    
+    def reset_mapStage(self):
+        self.mapStage = 0
         
     # maze parameter
     def set_MapSize(self,size):
@@ -161,6 +178,7 @@ class call_back:
     def mapReset_goal(self):
         if self.is_goal():
             self.reset_MapPlayer()
+            
 
     # ------Scene
     def change_scene(self,key):

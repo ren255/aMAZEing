@@ -1,18 +1,81 @@
 @startuml name
-class Person {
-  - id: int
-  - name: string
-  - age: int
-  + setAddress(address: Address)
-  + getAddress(): Address
+
+class Main {
+    + scenes: dict
+    + active_scene: str
+    + __init__(screen: Surface)
+    + loop()
 }
 
-class Address {
-  - street: string
-  - city: string
-  - state: string
-  - zip: string
+class call_back {
+    - main: Main
+    + __init__(main: Main)
+    + set_MapSize(size: int)
+    + setMapPanel(panel: Panel)
+    + reset_MapPlayer()
+    + map2Solution()
+    + map2Nomal()
+    + draw_map(screen: Surface)
+    + draw_player(screen: Surface)
+    + mapReset_goal()
+    + change_scene(scene_name: str)
 }
 
-Person --> Address : has
+file main_logic {
+    class stopwatch
+    class eachFrame
+    class YieldListloop
+    class Maze
+    class Render
+    class DynaPlayerMaster
+}
+
+
+
+class BaseScene {
+    + __init__(screen)
+    - self.manager
+    + process_events(event)
+    + update(dt)
+    + draw(surface)
+    + setUP()
+    + auto_layout(...)
+}
+
+class UIStore {
+    + __init__(manager, screen)
+    + Header()
+    + Game_Screen()
+}
+
+package Scenes{
+    class home {
+        + __init__(screen, call_back)
+        + setUP()
+        + handle_events(event)
+    }
+
+    class maze {
+        + __init__(screen, call_back)
+        + setUP()
+        + handle_events(event)
+    }
+}
+
+Main -> call_back
+Main --> Scenes : シーンの更新（イベント処理、UI描画など）
+
+call_back --> main_logic : main_logicはcall_backからのみアクセスされる
+
+
+Scenes --> call_back
+
+home --|> BaseScene
+maze --|> BaseScene
+
+Scenes ---> UIStore
+
+UIStore -u[hidden]- BaseScene
+
+
 @enduml

@@ -9,7 +9,7 @@ class maze(BaseScene):
         self.call_back = call_back
         super().__init__(screen)
         self.manager.get_theme().load_theme('theme/custom.json')
-        UI_Store = UIStore(self.manager,screen)
+        UI_Store = UIStore(self.manager)
 
         self.window = screen.get_size()
 
@@ -43,6 +43,18 @@ class maze(BaseScene):
             object_id=ObjectID("@info_panel"),
             container=self.info_Panel
         )
+        
+        
+        self.label_Scores = self.auto_layout(
+            self.Score_Panel, 
+            pygame_gui.elements.UILabel, 
+            (20,20), 
+            (300, 30), 
+            10, 
+            ["time", "stage", "Avge"], 
+            direction="vertical")
+        
+        
         self.map_buttons = pygame_gui.elements.UIPanel(
             relative_rect=pygame.Rect((0, 500), (infoX,map-500)),
             starting_height=2,
@@ -50,9 +62,9 @@ class maze(BaseScene):
             object_id=ObjectID("@info_panel"),
             container=self.info_Panel
         )
+        
         #info_Panels end
 
-        # ボタンを自動配置する例
         button_texts = ["Next", "Solution", "Nomal","Button","Button","Button","Button",]
         self.buttons = self.auto_layout(
             self.map_buttons, 
@@ -69,8 +81,24 @@ class maze(BaseScene):
             self.call_back.playerMotionManager,
             self.call_back.draw_map,
             self.call_back.draw_player,
-            self.call_back.mapReset_goal
+            self.call_back.mapReset_goal,
+            self.update_label,
         ])
+        
+    def update_label(self):
+        time = self.call_back.get_time()
+        time = round(time,1)
+        self.label_Scores[0].set_text(f"time : {time}")
+        
+        mapStage = self.call_back.get_mapStage()
+        self.label_Scores[1].set_text(f"stage : {mapStage}")
+        
+        if mapStage == 0:
+            mapStage = 1
+        avge = time / mapStage
+        avge = round(avge,1)
+        self.label_Scores[2].set_text(f"avge time: {avge}")
+        
 
     def handle_events(self,event):
         

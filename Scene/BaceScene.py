@@ -56,10 +56,9 @@ class BaseScene:
 
         return elements
 
-class UIStore(BaseScene):
-    def __init__(self,manager,screen):
-        #don't use function for scene
-        super().__init__(screen,manager)
+class UIStore():
+    def __init__(self,manager):
+        self.manager = manager
         self.manager.get_theme().load_theme('theme/custom.json')
 
 

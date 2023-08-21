@@ -1,0 +1,30 @@
+@startuml name
+actor User
+participant "Google スライド" as Slide
+participant "システム" as System
+participant "Google ドライブ" as Drive
+participant "気象庁のサイト" as WeatherSite
+
+User -> Slide: 植物の成長データを入力
+User -> Slide: 観察した写真をアップロード
+User -> System: プログラムの実行
+
+activate System
+
+alt "定期観察" テキストが見つかった場合
+    System -> System: 今日の日付情報を取得
+    System -> Slide: 日付情報と印を書き込む
+    System -> Drive: 今日の写真を取得
+    System -> Slide: 新しい写真をでダミー画像を置換
+    System -> Drive: 写真を削除
+    System -> Slide: ダミースライドを複製
+else "定期観察 日付 $" テキストが見つかった場合
+    System -> Slide: 日付情報を取得
+    System -> WeatherSite: 日付を元に天気情報を取得
+    System -> Slide: 天気情報をスライドに挿入
+end
+
+System -> User: 処理が完了
+
+deactivate System
+@enduml
